@@ -1,5 +1,12 @@
-import axios from "axios";
+// archivo conectar con backend
 
-const API = 'http://localhost:5001/api';
+import axios from './axios';
 
-export const registerRequest = user => axios.post(`${API}/register`,user);
+//const API = 'http://localhost:5001/api';
+
+export const registerRequest = user => axios.post(`/register`, user);//exportamos esta funcion que hace una
+//peticion post con endpoint register y le pasamos el user(usuario)
+
+export const loginRequest = user => axios.post(`/login`,user);
+
+export const verifyTokenRequest = () => axios.get(`/verify`);

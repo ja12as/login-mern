@@ -1,6 +1,8 @@
 import User from '../models/user.models.js';
 import bcrypt from 'bcryptjs';
 import { createTokenAccess } from '../libs/jwt.js';
+import jwt from 'jsonwebtoken';
+import { TOKEN_SECRET } from '../config.js';
 
 export const register = async(req , res) => {
     // desustructurar el body que se envia
@@ -9,8 +11,9 @@ export const register = async(req , res) => {
     //res.send('Resgistrando');
     try{
 
-        const userFound  = await User.findOne({ email });//
-        if (userFound) return res.status(400).json(["the email is already in use"]);
+        //funcion que valida si el usuario se encuentra registrado
+        const userFound = await User.findOne({email})
+        if(userFound) return res.status(400).json(["the email is already in use"])
 
         const passwordHash = await bcrypt.hash(password, 10);//Cifrar la contraseña con Bcrypt
         const newUser = new User({
@@ -72,3 +75,23 @@ export const profile = async(req ,res)=>{
     })
 
 };
+//verificamos nuestro token 
+export const verifyToken = async (req,res)=>{
+    const {token}=req.cookies
+    if(!token) return res.status(401).json({message:"Unauthorized"})
+
+    jwt.verify(token,TOKEN_SECRET,async(err,user)=>{
+    if (err) return res.status(401).json({message:"Unauthorized"})
+
+    const userFound = await User.findById(user.id)
+    if(!userFound) return res.status(401).json({message:"Unauthorized"})
+
+    return res.json({
+        id: userFound.id,
+        username: userFound.username,
+        email: userFound.email
+
+    })
+
+    })
+}
