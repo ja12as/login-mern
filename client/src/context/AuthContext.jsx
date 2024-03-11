@@ -2,7 +2,7 @@
 // usecontext es un hook nos permite consmir uncontexto , es un atajo para compartir la informacion entre componentes
 import {createContext,useState,useContext, useEffect} from 'react'
 
-import { loginRequest, registerRequest ,verifyTokenRequest} from '../api/auth';//importamos el registeRequest de la api
+import { loginRequest, registerRequest ,verifyTokenRequest} from './../api/auth';//importamos el registeRequest de la api
 import Cookies from 'js-cookie';
 
 export const AuthContext = createContext();
@@ -64,6 +64,7 @@ export const AuthProvider = ({children}) =>{
             const cookies = Cookies.get();
         if(!cookies.token){
             setIsAuthenticathed(false)
+            setLoading(false)
             return setUser(null)
         }
         try {
@@ -72,6 +73,7 @@ export const AuthProvider = ({children}) =>{
             if(!res.data){
                 setIsAuthenticathed(false)
                 setLoading(false)
+                return;
             }
             setIsAuthenticathed(true)
             setUser(res.data)
@@ -81,9 +83,7 @@ export const AuthProvider = ({children}) =>{
             setIsAuthenticathed(false);
             setUser(null);
             setLoading(false)
-            
         }
-            
         }
         checkLogin();
     },[])
